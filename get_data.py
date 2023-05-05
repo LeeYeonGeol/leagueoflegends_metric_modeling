@@ -1,4 +1,5 @@
 import requests
+import os
 import pandas as pd
 from pandas import json_normalize
 import time
@@ -37,7 +38,7 @@ def get_puuid(api_key, tier, page):
             result_df = pd.concat([result_df, df])
 
     # 2. summonerName이용하여 puuid 구하기
-    for i in tqdm(range(100)):
+    for i in tqdm(range(50)):
         try:
             summoner = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + result_df['summonerName'].iloc[i] + '?api_key=' + api_key
             
@@ -73,16 +74,19 @@ def get_match_ids(api_key, df):
     print("match id 구하기 시작!!!")
     matchs = []
     for index, row in tqdm(df.iterrows()):
-        puuid = row['puuid']
-        if type(puuid) == str:
-            api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/"+puuid+"/ids?start=0&count=20&api_key="+api_key
-        r = requests.get(api_url)
-        while r.status_code == 429:
-            time.sleep(60)
+        try:
+            puuid = row['puuid']
             if type(puuid) == str:
                 api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/"+puuid+"/ids?start=0&count=20&api_key="+api_key
             r = requests.get(api_url)
-        matchs += r.json()
+            while r.status_code == 429:
+                time.sleep(60)
+                if type(puuid) == str:
+                    api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/"+puuid+"/ids?start=0&count=20&api_key="+api_key
+                r = requests.get(api_url)
+            matchs += r.json()
+        except:
+            pass
     
     return matchs
 
@@ -92,27 +96,29 @@ def get_match_info(api_key, matchs):
     match_df = pd.DataFrame()
 
     for match in tqdm(matchs):
-        api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/"+match+"?api_key="+api_key
-        r = requests.get(api_url)
-        while r.status_code == 429:
-            time.sleep(60)
+        try:
             api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/"+match+"?api_key="+api_key
             r = requests.get(api_url)
-        json_data = r.json()
-        participant_data = json_data['info']['participants']
-        for i in range(10):
-            participant_pd = json_normalize(participant_data[i])
-            participant_pd = participant_pd.dropna()
-            match_df = pd.concat([match_df, participant_pd])
+            while r.status_code == 429:
+                time.sleep(60)
+                api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/"+match+"?api_key="+api_key
+                r = requests.get(api_url)
+            json_data = r.json()
+            participant_data = json_data['info']['participants']
+            for i in range(10):
+                participant_pd = json_normalize(participant_data[i])
+                participant_pd = participant_pd.dropna()
+                match_df = pd.concat([match_df, participant_pd])
+        except:
+            pass
     return match_df
 
 def main():
     
-    api_key = "RGAPI-f7861c56-f78f-429b-8b6e-3adbc2d6607c"
+    api_key = "RGAPI-995efd2c-b7d0-4896-a1c0-1294ce44c23c"
 
     tiers = ["SILVER", "GOLD", "PLATINUM", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"]
-    tiers = ["PLATINUM", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"]
-
+    
     page = 1
 
     result_df = pd.DataFrame()
@@ -123,10 +129,15 @@ def main():
         matchs += get_match_ids(api_key, puuid_df)
 
         match_df = get_match_info(api_key, matchs)
+
+        match_df['tier'] = tier
+
         result_df = pd.concat([result_df, match_df])
-        
-        #result_df.reset_index(inplace=True, drop=True)
-        result_df.to_csv('data_3.csv',mode='a', index=False)
+
+        if not os.path.exists('data_4.csv'):
+            result_df.to_csv('data_4.csv',mode='w', index=False)
+        else:
+            result_df.to_csv('data_4.csv',mode='a', index=False, header=False)
 
 if __name__ == "__main__":
 	main()
