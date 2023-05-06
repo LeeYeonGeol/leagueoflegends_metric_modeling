@@ -73,7 +73,7 @@ def get_match_info(name: str):
     matches = get_matches(name)
     db = {}
     for idx1, match in enumerate(matches):
-        if idx1 == 10:
+        if idx1 == 5:
             break
         api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/"+match+"?api_key="+api_key
         

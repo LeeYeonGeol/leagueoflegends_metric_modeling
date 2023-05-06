@@ -14,7 +14,7 @@ st.subheader('게임 정보 및 플레이어 전적 확인하기')
 
 API_KEY = "RGAPI-221d4c9f-4589-40e2-893f-6bd383cebd2f"
 
-url = "http://0.0.0.0:5000"
+url = "http://127.0.0.1:5000"
 
 @st.cache
 def load_data(nrows):
