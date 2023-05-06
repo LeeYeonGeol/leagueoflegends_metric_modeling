@@ -3,7 +3,7 @@ version: '3'
 services:
   backend:
     image: fullstack
-    command: uvicorn backend:app --host 0.0.0.0 --port 5000 --reload
+    command: uvicorn backend:app --host 127.0.0.1 --port 5000 --reload
     restart: always
     ports:
       - "5000:5000"
