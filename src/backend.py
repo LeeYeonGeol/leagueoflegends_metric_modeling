@@ -6,6 +6,7 @@ import requests
 import json
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
+import time
 
 # create the app object
 app = FastAPI()
@@ -38,7 +39,11 @@ async def root():
 @app.get("/summoner/{name}")
 def get_summoner_by_name(name: str):
     summoner = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/"+name+'?api_key='+api_key
-    response = requests.get(summoner)
+    try: 
+        response = requests.get(summoner)
+    except:
+        time.sleep(5)
+        response = requests.get(summoner)
     if response.status_code == 200:
         return response.json()
     else:
@@ -51,7 +56,12 @@ def get_matches(name: str):
     puuid = summoner_info["puuid"]
 
     api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/"+puuid+"/ids?start=0&count=20&api_key="+api_key
-    response = requests.get(api_url)
+    try: 
+        response = requests.get(api_url)
+    except:
+        time.sleep(5)
+        response = requests.get(api_url)   
+
     if response.status_code == 200:
         return response.json()
     else:
@@ -66,8 +76,12 @@ def get_match_info(name: str):
         if idx1 == 10:
             break
         api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/"+match+"?api_key="+api_key
-        response = requests.get(api_url)
-
+        
+        try:
+            response = requests.get(api_url)
+        except:
+            time.sleep(5)
+            response = requests.get(api_url)
         response = response.json()
 
         match_db = {}
