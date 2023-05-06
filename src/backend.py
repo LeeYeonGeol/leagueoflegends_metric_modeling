@@ -35,7 +35,7 @@ api_key = "RGAPI-221d4c9f-4589-40e2-893f-6bd383cebd2f"
 async def root():
     return {"message": "Hello World"}
 
-
+'''
 @app.get("/summoner/{name}")
 def get_summoner_by_name(name: str):
     summoner = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/"+name+'?api_key='+api_key
@@ -96,7 +96,7 @@ def get_match_info(name: str):
 
         # 검색된 소환사 정보
         searched_summoner = {}
-        '''
+        
         for idx, participant in enumerate(response['info']['participants']):
             all_summoner_names.append(participant['summonerName'])
             all_champ_names.append(participant['championName'])
@@ -114,7 +114,7 @@ def get_match_info(name: str):
         match_db['all_summoner_names'] = all_summoner_names
         match_db['all_champ_names'] = all_champ_names
         match_db['searched_summoner'] = [searched_summoner]
-        '''
+        
         # 챔피언 이미지 저장
         all_champ_images = {}
         for champ in all_champ_names:
@@ -127,7 +127,7 @@ def get_match_info(name: str):
     json_db = json.dumps(db, separators=(',', ':'))
 
     return db
-
+'''
 
 @app.post('/predict')
 def predict(data):
