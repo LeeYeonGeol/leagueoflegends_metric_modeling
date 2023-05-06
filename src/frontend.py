@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import requests
 import json
+import time
 
 def header(url):
     st.markdown(f'<p style="background-color:#0066cc;color:#33ff33;font-size:24px;border-radius:2%;">{url}</p>', unsafe_allow_html=True)
@@ -37,6 +38,7 @@ with st.container():
 if summoner_name:
     try:
         matches = requests.get(url=url+"/summoner/"+summoner_name+"/matches")
+        time.sleep(2)
         matches.raise_for_status()  # HTTP 에러 체크
     except requests.exceptions.HTTPError as e:
         st.error(f"HTTP error occurred: {e}")
@@ -45,7 +47,7 @@ if summoner_name:
 
     # 매치
     response = requests.get(url=url+"/summoner/"+summoner_name+"/matches/match_info")
-
+    time.sleep(2)
     match_data = response.json()
 
 

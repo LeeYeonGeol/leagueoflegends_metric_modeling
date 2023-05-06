@@ -42,7 +42,7 @@ def get_summoner_by_name(name: str):
     try: 
         response = requests.get(summoner)
     except:
-        time.sleep(5)
+        time.sleep(20)
         response = requests.get(summoner)
     if response.status_code == 200:
         return response.json()
@@ -59,7 +59,7 @@ def get_matches(name: str):
     try: 
         response = requests.get(api_url)
     except:
-        time.sleep(5)
+        time.sleep(20)
         response = requests.get(api_url)   
 
     if response.status_code == 200:
@@ -80,7 +80,7 @@ def get_match_info(name: str):
         try:
             response = requests.get(api_url)
         except:
-            time.sleep(5)
+            time.sleep(10)
             response = requests.get(api_url)
         response = response.json()
 
