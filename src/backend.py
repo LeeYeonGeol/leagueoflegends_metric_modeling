@@ -35,14 +35,14 @@ api_key = "RGAPI-221d4c9f-4589-40e2-893f-6bd383cebd2f"
 async def root():
     return {"message": "Hello World"}
 
-'''
+
 @app.get("/summoner/{name}")
 def get_summoner_by_name(name: str):
     summoner = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/"+name+'?api_key='+api_key
     try: 
         response = requests.get(summoner)
     except:
-        time.sleep(20)
+        time.sleep(2)
         response = requests.get(summoner)
     if response.status_code == 200:
         return response.json()
@@ -59,7 +59,7 @@ def get_matches(name: str):
     try: 
         response = requests.get(api_url)
     except:
-        time.sleep(20)
+        time.sleep(2)
         response = requests.get(api_url)   
 
     if response.status_code == 200:
@@ -80,7 +80,7 @@ def get_match_info(name: str):
         try:
             response = requests.get(api_url)
         except:
-            time.sleep(10)
+            time.sleep(2)
             response = requests.get(api_url)
         response = response.json()
 
@@ -127,7 +127,7 @@ def get_match_info(name: str):
     json_db = json.dumps(db, separators=(',', ':'))
 
     return db
-'''
+
 
 @app.post('/predict')
 def predict(data):
