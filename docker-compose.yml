@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  backend:
+    image: fullstack
+    command: uvicorn backend:app --host 127.0.0.1 --port 500 --reload
+    restart: always
+    ports:
+      - "5000:500"
+  frontend:
+    image: fullstack
+    command: streamlit run frontend.py --server.port 300
+    restart: always
+    ports:
+      - "3000:300"

@@ -72,7 +72,7 @@ def get_match_info(name: str):
 
         match_db = {}
         # 게임 소요 시간
-        match_db['game_duration'] = response['info']['gameDuration']
+        match_db['game_duration'] = [response['info']['gameDuration']]
 
         # 소환사명 저장
         all_summoner_names = []
@@ -99,7 +99,7 @@ def get_match_info(name: str):
         
         match_db['all_summoner_names'] = all_summoner_names
         match_db['all_champ_names'] = all_champ_names
-        match_db['searched_summoner'] = searched_summoner
+        match_db['searched_summoner'] = [searched_summoner]
 
         # 챔피언 이미지 저장
         all_champ_images = {}
