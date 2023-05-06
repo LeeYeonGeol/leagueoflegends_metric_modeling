@@ -9,7 +9,7 @@ services:
       - "5000:500"
   frontend:
     image: fullstack
-    command: streamlit run frontend.py --server.port 300
+    command: streamlit run frontend.py
     restart: always
     ports:
-      - "3000:300"
+      - "8501:8501"
