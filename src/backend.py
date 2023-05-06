@@ -42,7 +42,7 @@ def get_summoner_by_name(name: str):
     try: 
         response = requests.get(summoner)
     except:
-        time.sleep(2)
+        time.sleep(1)
         response = requests.get(summoner)
     if response.status_code == 200:
         return response.json()
@@ -59,7 +59,7 @@ def get_matches(name: str):
     try: 
         response = requests.get(api_url)
     except:
-        time.sleep(2)
+        time.sleep(1)
         response = requests.get(api_url)   
 
     if response.status_code == 200:
@@ -73,14 +73,14 @@ def get_match_info(name: str):
     matches = get_matches(name)
     db = {}
     for idx1, match in enumerate(matches):
-        if idx1 == 5:
+        if idx1 == 10:
             break
         api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/"+match+"?api_key="+api_key
         
         try:
             response = requests.get(api_url)
         except:
-            time.sleep(2)
+            time.sleep(1)
             response = requests.get(api_url)
         response = response.json()
 
@@ -133,10 +133,9 @@ def get_match_info(name: str):
 def predict(data):
     return 0
 
-'''
+
 def main():
-    uvicorn.run(app, host='127.0.0.1', port=8000)
+    uvicorn.run(app, host='127.0.0.1', port=5000)
 
 if __name__ == '__main__':
     main()
-'''
