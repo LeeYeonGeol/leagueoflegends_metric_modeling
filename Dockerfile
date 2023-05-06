@@ -8,10 +8,10 @@ WORKDIR /src
 COPY ./requirements.txt /src/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /src/requirements.txt
 
-EXPOSE 5000
+EXPOSE 500
 
 # Copy the application code
 #COPY ./fastapi /code/fastapi
 
 # Set the command to start the application
-CMD ["uvicorn", "backend:app", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["uvicorn", "backend:app", "--host", "0.0.0.0", "--port", "500"]
