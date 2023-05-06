@@ -96,7 +96,7 @@ def get_match_info(name: str):
 
         # 검색된 소환사 정보
         searched_summoner = {}
-        
+        '''
         for idx, participant in enumerate(response['info']['participants']):
             all_summoner_names.append(participant['summonerName'])
             all_champ_names.append(participant['championName'])
@@ -114,7 +114,7 @@ def get_match_info(name: str):
         match_db['all_summoner_names'] = all_summoner_names
         match_db['all_champ_names'] = all_champ_names
         match_db['searched_summoner'] = [searched_summoner]
-
+        '''
         # 챔피언 이미지 저장
         all_champ_images = {}
         for champ in all_champ_names:
