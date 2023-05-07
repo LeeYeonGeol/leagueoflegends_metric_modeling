@@ -17,6 +17,12 @@
 - http://3.35.209.15:8501/
 <img src="https://user-images.githubusercontent.com/48538655/236659294-16b56f1e-399c-47d8-b86f-ca591b9a60d1.png" alt="사이트 화면" width="500">
 
+# Reference
+- https://scienceon.kisti.re.kr/commons/util/originalView.do?cn=JAKO201714563379407&oCn=JAKO201714563379407&dbt=JAKO&journal=NJOU00294613
+- https://shinminyong.tistory.com/11
+- https://towardsdatascience.com/pythons-predict-proba-doesn-t-actually-predict-probabilities-and-how-to-fix-it-f582c21d63fc
+- https://3months.tistory.com/490
+
 # TODO 
 - 인분 지표 사이트상에 출력
 - 도커 사용
