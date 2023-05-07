@@ -12,7 +12,7 @@ def header(url):
 st.title('League of Legends 전적검색')
 st.subheader('게임 정보 및 플레이어 전적 확인하기')
 
-API_KEY = "RGAPI-221d4c9f-4589-40e2-893f-6bd383cebd2f"
+API_KEY = "RGAPI-f9bb08f5-8267-4773-8770-79efaa9130e4"
 
 url = "http://127.0.0.1:5000"
 
@@ -38,7 +38,6 @@ with st.container():
 if summoner_name:
     try:
         matches = requests.get(url=url+"/summoner/"+summoner_name+"/matches")
-       
         matches.raise_for_status()  # HTTP 에러 체크
     except requests.exceptions.HTTPError as e:
         st.error(f"HTTP error occurred: {e}")
@@ -47,10 +46,12 @@ if summoner_name:
 
     # 매치
     response = requests.get(url=url+"/summoner/"+summoner_name+"/matches/match_info")
-    
     match_data = response.json()
 
+    # 몇 인분
+    #response = requests.get(url=url+"/summoner/"+summoner_name+"/wpa")
 
+    #wpa = response.json()
 
     # 데이터 출력
     for match_id in match_data:
@@ -77,7 +78,16 @@ if summoner_name:
             
         with col2:
             # KDA 및 승패 출력
-            st.write("KDA: {} / {} / {}, {}".format(kills, deaths, assists, "승리" if win else "패배"))
+            st.write("KDA: {} / {} / {}".format(kills, deaths, assists))
+
+            # 승패 출력
+            st.markdown(":blue[승리]" if win else ":red[패배]")
+
+            # 인분 출력
+
+            st.write(":red[{}인분]".format(0))
+   
+
             # CS 출력
             st.write("CS: {}".format(cs))
         with col3:
@@ -111,5 +121,5 @@ if summoner_name:
 
     
 
-    # 구분선
-    st.write("---")
+        # 구분선
+        st.markdown("<hr style='border-top: 3px solid black;'>", unsafe_allow_html=True)

@@ -1,12 +1,14 @@
 # library imports
 import uvicorn
 import joblib
-from fastapi import FastAPI
+from fastapi import FastAPI, File
 import requests
 import json
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
 import time
+import pickle
+import pandas as pd
 
 # create the app object
 app = FastAPI()
@@ -29,7 +31,86 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-api_key = "RGAPI-221d4c9f-4589-40e2-893f-6bd383cebd2f"
+api_key = "RGAPI-f9bb08f5-8267-4773-8770-79efaa9130e4"
+
+def get_test_df(response, data_columns, API_KEY):
+    db = defaultdict(list)
+    
+    position = {0: 'TOP', 1: 'JUNGLE', 2: "MID", 3: "AD_CARRY", 4: "SUPPORT"}
+    participant_data = response['info']['participants']
+    gameDuration = response['info']['gameDuration']
+    
+    summonerNames = []
+    for k in range(10):
+        summonerName = response['info']['participants'][k]['summonerName']
+
+        summonerNames.append(summonerName)
+        
+        sohwan_url = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName +'?api_key=' + API_KEY
+        
+        try: 
+            r = requests.get(sohwan_url)
+        except:
+            time.sleep(1)
+            r = requests.get(sohwan_url)
+        sohwan_info = r.json()
+        summonerID = sohwan_info['id']
+
+        league_url = "https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/"+ summonerID +"?api_key=" + API_KEY
+        try: 
+            r = requests.get(league_url)
+        except:
+            time.sleep(1)        
+            r = requests.get(league_url)
+
+        league_info = r.json()
+    
+        db['position'].append(position[k%5])
+        db['gameDuration'].append(gameDuration)
+    
+        for column in ['champLevel', 'kills', 'deaths', 'assists','totalDamageDealtToChampions', 'damageSelfMitigated', 'totalHeal', 'totalMinionsKilled', 'neutralMinionsKilled', 'wardsPlaced','visionScore', 'win']:
+            db[column].append(participant_data[k][column])
+    
+        # 티어
+        for league in league_info:
+            if league["queueType"] == "RANKED_SOLO_5x5":
+                db['tier'].append(league["tier"])
+                break
+        else:
+            # 언랭은 실버 취급
+            db['tier'].append("SILVER")
+    
+    result_df = pd.DataFrame(columns = data_columns)
+    
+    for k, column in enumerate(data_columns):
+        if k <= 12:
+            result_df[column] = db[column]
+        elif k <= 16:
+            if 'JUNGLE' in column:
+                result_df[column] = [1 if x == 'JUNGLE' else 0  for x in db['position']]
+            elif 'MID' in column:
+                result_df[column] = [1 if x == 'MID' else 0  for x in db['position']]
+            elif 'SUPPORT' in column:
+                result_df[column] = [1 if x == 'SUPPORT' else 0  for x in db['position']]
+            elif 'TOP' in column:
+                result_df[column] = [1 if x == 'TOP' else 0  for x in db['position']]
+        else:
+            if 'DIAMOND' in column:
+                result_df[column] = [1 if x == 'DIAMOND' else 0  for x in db['tier']]
+            elif 'GOLD' in column:
+                result_df[column] = [1 if x == 'GOLD' else 0  for x in db['tier']]
+            elif 'GRANDMASTER' in column:
+                result_df[column] = [1 if x == 'GRANDMASTER' else 0  for x in db['tier']]
+            elif 'MASTER' in column:
+                result_df[column] = [1 if x == 'MASTER' else 0  for x in db['tier']]            
+            elif 'PLATINUM' in column:
+                result_df[column] = [1 if x == 'PLATINUM' else 0  for x in db['tier']]  
+            elif 'SILVER' in column:
+                result_df[column] = [1 if x == 'SILVER' else 0  for x in db['tier']]  
+                
+    return result_df, summonerNames
+
+
 
 @app.get("/")
 async def root():
@@ -129,8 +210,42 @@ def get_match_info(name: str):
     return db
 
 
-@app.post('/predict')
-def predict(data):
+@app.get('/summoner/{name}/wpa')
+def predict(name: str):
+    matches = get_matches(name)
+
+    data_columns = ['gameDuration', 'champLevel', 'kills', 'deaths', 'assists',\
+        'totalDamageDealtToChampions', 'damageSelfMitigated', 'totalHeal',\
+        'totalMinionsKilled', 'neutralMinionsKilled', 'wardsPlaced',\
+        'visionScore', 'win', 'position_JUNGLE', 'position_MID',\
+        'position_SUPPORT', 'position_TOP', 'tier_DIAMOND', 'tier_GOLD',\
+        'tier_GRANDMASTER', 'tier_MASTER', 'tier_PLATINUM', 'tier_SILVER']
+
+    test_db = {}
+    champion_db = defaultdict(list)
+    win_rate_db = defaultdict(list)
+
+
+    # 매치별로 for문 돌기
+    for idx1, match in enumerate(matches):
+        if idx1 == 10:
+            break
+        api_url = "https://asia.api.riotgames.com/lol/match/v5/matches/"+match+"?api_key="+api_key
+        response = requests.get(api_url)
+        response = response.json()
+
+        test_df, summonerNames = get_test_df(response, data_columns, api_key)
+
+        #champion_db[idx1] = summonerNames
+
+
+
+    
+        # model load
+        #model = pickle.loads("../model_grid.pkl")
+    
+
+
     return 0
 
 
