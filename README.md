@@ -12,12 +12,10 @@
 1. 이진분류에 사용된 로짓값을 IsotonicRegression을 통해 승률에 근사
 2. 이를 바탕으로 팀원들간의 상대적 기여도 측정
 
-<img src="https://user-images.githubusercontent.com/48538655/236659294-16b56f1e-399c-47d8-b86f-ca591b9a60d1.png" alt="사이트 화면" width="500">
-
-
 
 # Site
 - http://3.35.209.15:8501/
+<img src="https://user-images.githubusercontent.com/48538655/236659294-16b56f1e-399c-47d8-b86f-ca591b9a60d1.png" alt="사이트 화면" width="500">
 
 # TODO 
 - 인분 지표 사이트상에 출력
