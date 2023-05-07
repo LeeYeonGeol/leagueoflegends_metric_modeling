@@ -12,7 +12,7 @@ def header(url):
 st.title('League of Legends 전적검색')
 st.subheader('게임 정보 및 플레이어 전적 확인하기')
 
-API_KEY = "RGAPI-f9bb08f5-8267-4773-8770-79efaa9130e4"
+API_KEY = "RGAPI-1bbe1899-5876-4ae8-8b43-623537d3ccd8"
 
 url = "http://127.0.0.1:5000"
 
