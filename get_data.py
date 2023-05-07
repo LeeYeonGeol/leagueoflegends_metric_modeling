@@ -4,6 +4,8 @@ import pandas as pd
 from pandas import json_normalize
 import time
 from tqdm import tqdm
+from collections import defaultdict
+
 
 # puuid를 얻는 함수
 def get_puuid(api_key, tier, page):
@@ -38,7 +40,7 @@ def get_puuid(api_key, tier, page):
             result_df = pd.concat([result_df, df])
 
     # 2. summonerName이용하여 puuid 구하기
-    for i in tqdm(range(50)):
+    for i in tqdm(range(30)):
         try:
             summoner = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + result_df['summonerName'].iloc[i] + '?api_key=' + api_key
             
@@ -91,9 +93,11 @@ def get_match_ids(api_key, df):
     return matchs
 
 # match id를 통해 match 정보 구하는 함수
-def get_match_info(api_key, matchs):
+def get_match_info(api_key, matchs, tier, information_db):
     print("match 정보 구하기 시작!!!")
     match_df = pd.DataFrame()
+
+    position = {0: 'TOP', 1: 'JUNGLE', 2: "MID", 3: "AD_CARRY", 4: "SUPPORT"}
 
     for match in tqdm(matchs):
         try:
@@ -105,39 +109,50 @@ def get_match_info(api_key, matchs):
                 r = requests.get(api_url)
             json_data = r.json()
             participant_data = json_data['info']['participants']
+            gameDuration = json_data['info']['gameDuration']
             for i in range(10):
                 participant_pd = json_normalize(participant_data[i])
-                participant_pd = participant_pd.dropna()
+                information_db['position'].append(position[i%5])
+                information_db['tier'].append(tier)
+                information_db['gameDuration'].append(gameDuration)
                 match_df = pd.concat([match_df, participant_pd])
         except:
             pass
-    return match_df
+    return match_df, information_db
 
 def main():
     
-    api_key = "RGAPI-995efd2c-b7d0-4896-a1c0-1294ce44c23c"
+    api_key = "RGAPI-221d4c9f-4589-40e2-893f-6bd383cebd2f"
 
     tiers = ["SILVER", "GOLD", "PLATINUM", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"]
-    
+
     page = 1
 
-    result_df = pd.DataFrame()
     for tier in tiers:
+        information_db = defaultdict(list)
+        result_df = pd.DataFrame()
         matchs = []
         print(tier + "티어 데이터 수집 시작!!!")
         puuid_df = get_puuid(api_key, tier, page)
         matchs += get_match_ids(api_key, puuid_df)
 
-        match_df = get_match_info(api_key, matchs)
+        match_df, information_db = get_match_info(api_key, matchs, tier, information_db)
 
-        match_df['tier'] = tier
+
+        result_df = result_df.reset_index()
+        match_df = match_df.reset_index()
+        information_df = pd.DataFrame(information_db)
+        information_df = information_df.reset_index()
+
 
         result_df = pd.concat([result_df, match_df])
 
-        if not os.path.exists('data_4.csv'):
-            result_df.to_csv('data_4.csv',mode='w', index=False)
+        result_df = pd.concat([result_df, pd.DataFrame(information_df)], axis = 1)
+
+        if not os.path.exists('data_9.csv'):
+            result_df.to_csv('data_9.csv',mode='w', index=False)
         else:
-            result_df.to_csv('data_4.csv',mode='a', index=False, header=False)
+            result_df.to_csv('data_9.csv',mode='a', index=False, header=False)
 
 if __name__ == "__main__":
 	main()
