@@ -51,7 +51,7 @@ def get_test_df(response, data_columns, API_KEY):
         try: 
             r = requests.get(sohwan_url)
         except:
-            time.sleep(1)
+            time.sleep(5)
             r = requests.get(sohwan_url)
         sohwan_info = r.json()
         summonerID = sohwan_info['id']
@@ -60,7 +60,7 @@ def get_test_df(response, data_columns, API_KEY):
         try: 
             r = requests.get(league_url)
         except:
-            time.sleep(1)        
+            time.sleep(5)        
             r = requests.get(league_url)
 
         league_info = r.json()
